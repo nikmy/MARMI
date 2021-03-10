@@ -1,6 +1,6 @@
 ## Multiple Access Resource Management Interface
 
-### Generics (```namespace gen```)
+### ```namespace gen```
 
 The main idea of this project is to encapsulate mechanisms for filling and
 multi-threaded processing data from the one resource inside one class.
