@@ -24,7 +24,7 @@ void terminate();
 ```
 
 The main idea of this project is to encapsulate mechanisms for filling and
-multi-threaded processing data from the one resource inside one class.
+multithreading processing data from the one resource inside one class.
 This class is ```ResourceManager<T>```, where ```T``` is type of data
 inside container (queue, for example). Use this in 5 steps:  
   1. Inherit your ```Container<T>``` class from ```Resource<T>```.
