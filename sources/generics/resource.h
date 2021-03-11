@@ -9,6 +9,7 @@ template <class T>
 class Resource
 {
     friend class Supplier<T>;
+
     friend class Handler<T>;
 
  public:
@@ -21,7 +22,8 @@ class Resource
 };
 
 template <class T>
-Resource<T>::Resource(const Resource&) : Resource()
-{}
+Resource<T>::Resource(const Resource&)
+    : Resource()
+{ }
 
 }

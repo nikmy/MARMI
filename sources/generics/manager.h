@@ -31,8 +31,8 @@ class ResourceManager
     ResourceManager() = delete;
     ResourceManager(const ResourceManager&) = delete;
 
-    void launch();
-    void terminate();
+    virtual void launch();
+    virtual void terminate();
 
  private:
     resource_t& resource_;
@@ -54,7 +54,7 @@ ResourceManager<T>::ResourceManager
     : resource_(resource),
       supplier_(resource, supply_f, is_full),
       handler_(resource, access_f, handle_f, is_empty, n_of_threads_limit - 1)
-{}
+{ }
 
 template <class T>
 void ResourceManager<T>::launch()

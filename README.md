@@ -19,8 +19,8 @@ ResourceManager
             size_t                      n_of_threads_limit
         );
 
-void launch();
-void terminate();
+virtual void launch();
+virtual void terminate();
 ```
 
 The main idea of this project is to encapsulate mechanisms for filling and

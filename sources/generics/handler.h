@@ -59,7 +59,7 @@ Handler<T>::Handler
       threads_(),
       current_state_(STATUS_WAITING),
       cv_status_()
-{}
+{ }
 
 template <class T>
 void Handler<T>::start()
