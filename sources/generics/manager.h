@@ -8,7 +8,7 @@
 namespace gen
 {
 
-template <typename T>
+template <class T>
 class ResourceManager
 {
  public:
@@ -40,7 +40,7 @@ class ResourceManager
     handler_t handler_;
 };
 
-template <typename T>
+template <class T>
 ResourceManager<T>::ResourceManager
     (
         ResourceManager::resource_t& resource,
@@ -56,14 +56,14 @@ ResourceManager<T>::ResourceManager
       handler_(resource, access_f, handle_f, is_empty, n_of_threads_limit - 1)
 {}
 
-template <typename T>
+template <class T>
 void ResourceManager<T>::launch()
 {
     supplier_.start();
     handler_.start();
 }
 
-template <typename T>
+template <class T>
 void ResourceManager<T>::terminate()
 {
     supplier_.stop();

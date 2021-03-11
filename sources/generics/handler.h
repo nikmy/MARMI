@@ -6,7 +6,7 @@
 namespace gen
 {
 
-template <typename T>
+template <class T>
 class Handler
 {
  public:
@@ -42,7 +42,7 @@ class Handler
     void run_();
 };
 
-template <typename T>
+template <class T>
 Handler<T>::Handler
     (
         resource_t& resource,
@@ -61,7 +61,7 @@ Handler<T>::Handler
       cv_status_()
 {}
 
-template <typename T>
+template <class T>
 void Handler<T>::start()
 {
     for (size_t i = 0; i < n_of_threads_; ++i)
@@ -69,7 +69,7 @@ void Handler<T>::start()
     current_state_ = STATUS_RUNNING;
 }
 
-template <typename T>
+template <class T>
 void Handler<T>::stop()
 {
     current_state_ = STATUS_STOPPED;
@@ -78,7 +78,7 @@ void Handler<T>::stop()
         t.join();
 }
 
-template <typename T>
+template <class T>
 void Handler<T>::run_()
 {
     while (current_state_ != STATUS_STOPPED) {

@@ -5,7 +5,7 @@
 namespace gen
 {
 
-template <typename T>
+template <class T>
 class Resource
 {
     friend class Supplier<T>;
@@ -20,7 +20,7 @@ class Resource
     mutex_t access_mutex_;
 };
 
-template <typename T>
+template <class T>
 Resource<T>::Resource(const Resource&) : Resource()
 {}
 

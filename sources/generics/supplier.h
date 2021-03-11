@@ -6,7 +6,7 @@
 namespace gen
 {
 
-template <typename T>
+template <class T>
 class Supplier
 {
  public:
@@ -36,7 +36,7 @@ class Supplier
     void run_();
 };
 
-template <typename T>
+template <class T>
 Supplier<T>::Supplier
     (
         resource_t& target,
@@ -51,13 +51,13 @@ Supplier<T>::Supplier
       cv_status_()
 {}
 
-template <typename T>
+template <class T>
 void Supplier<T>::start()
 {
     main_thread_.emplace_back([&]() { run_(); });
 }
 
-template <typename T>
+template <class T>
 void Supplier<T>::stop()
 {
     current_state_ = STATUS_STOPPED;
@@ -65,7 +65,7 @@ void Supplier<T>::stop()
     main_thread_[0].join();
 }
 
-template <typename T>
+template <class T>
 void Supplier<T>::run_()
 {
     while (current_state_ != STATUS_STOPPED) {

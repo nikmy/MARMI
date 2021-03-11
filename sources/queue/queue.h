@@ -6,10 +6,12 @@
 namespace mtq
 {
 
-template <typename T, typename Alloc>
+using gen::size_t;
+
+template <class T, class Alloc>
 class Queue;
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 class QueueIterator
     : public std::iterator<std::random_access_iterator_tag, T>
 {
@@ -17,8 +19,7 @@ class QueueIterator
 
  public:
     using iterator_category = std::random_access_iterator_tag;
-    using size_type = std::size_t;
-    using value_type = T;
+    using value_t = T;
 
     QueueIterator(const QueueIterator& src);
 
@@ -27,8 +28,8 @@ class QueueIterator
 
     typename QueueIterator::reference operator*() const;
 
-    QueueIterator<T, Alloc>& operator+=(size_type offset);
-    QueueIterator<T, Alloc>& operator-=(size_type offset);
+    QueueIterator<T, Alloc>& operator+=(size_t offset);
+    QueueIterator<T, Alloc>& operator-=(size_t offset);
 
     QueueIterator<T, Alloc>& operator++();
     const QueueIterator<T, Alloc> operator++(int);
@@ -37,27 +38,26 @@ class QueueIterator
     const QueueIterator<T, Alloc> operator--(int);
 
  private:
-    value_type* item_;
-    value_type* base_;
-    size_type size_;
+    value_t* item_;
+    value_t* base_;
+    size_t size_;
 
-    QueueIterator(value_type* p, value_type* ring, size_type size);
+    QueueIterator(value_t* p, value_t* ring, size_t size);
 };
 
-template <typename T, typename Alloc = std::allocator<T>>
+template <class T, class Alloc = std::allocator<T>>
 class Queue : public gen::Resource<T>
 {
  public:
     using alloc_traits = std::allocator_traits<Alloc>;
     using iterator = QueueIterator<T, Alloc>;
-    using size_type = std::size_t;
-    using allocator_type = Alloc;
-    using value_type = T;
+    using allocator_t = Alloc;
+    using value_t = T;
 
     Queue();
     ~Queue();
 
-    explicit Queue(size_type init_capacity);
+    explicit Queue(size_t init_capacity);
     Queue(std::initializer_list<T> list);
 
     Queue(const Queue& src);
@@ -66,50 +66,50 @@ class Queue : public gen::Resource<T>
     Queue& operator=(const Queue& rhs);
     Queue& operator=(Queue&& rhs) noexcept;
 
-    const value_type& front() const noexcept;
-    const value_type& back() const noexcept;
+    const value_t& front() const noexcept;
+    const value_t& back() const noexcept;
 
-    value_type& front() noexcept;
-    value_type& back() noexcept;
+    value_t& front() noexcept;
+    value_t& back() noexcept;
 
     bool empty() const noexcept;
 
-    size_type size() const noexcept;
+    size_t size() const noexcept;
 
     void pop() noexcept;
 
     void clear() noexcept;
 
-    value_type take_first() noexcept;
+    value_t take_first() noexcept;
 
-    void push(const value_type& x);
-    void push(value_type&& x);
+    void push(const value_t& x);
+    void push(value_t&& x);
 
-    template <typename...Args>
+    template <class...Args>
     void emplace(Args&&...args);
 
-    void move_to(Queue<T>& q);
+    void move_to(Queue<T>& other);
 
-    void swap(Queue<T>& q) noexcept;
+    void swap(Queue<T>& other) noexcept;
 
     iterator begin() noexcept;
     iterator end() noexcept;
 
  private:
-    value_type* ring_;
+    value_t* ring_;
 
-    size_type size_;
-    size_type capacity_;
+    size_t size_;
+    size_t capacity_;
 
-    size_type front_;
-    size_type back_;
+    size_t front_;
+    size_t back_;
 
-    static constexpr size_type MIN_CAP = 256;
-    static allocator_type& Get_Allocator();
+    static constexpr size_t MIN_CAP = 256;
+    static allocator_t& Get_Allocator();
 
-    void resize_(size_type new_capacity) noexcept;
+    void resize_(size_t new_capacity) noexcept;
 
-    template <typename Q = Queue<T>>
+    template <class Q = Queue<T>>
     void emplace_(Q&& q) noexcept;
 };
 }
@@ -118,24 +118,24 @@ class Queue : public gen::Resource<T>
 namespace mtq
 {
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 QueueIterator<T, Alloc>::QueueIterator(const QueueIterator& src)
     : item_(src.item_), base_(src.base_), size_(src.size_)
 {}
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 bool QueueIterator<T, Alloc>::operator!=(const QueueIterator& rhs) const
 {
     return item_ != rhs.item_;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 bool QueueIterator<T, Alloc>::operator==(const QueueIterator& rhs) const
 {
     return item_ == rhs.item_;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 typename QueueIterator<T, Alloc>::reference
 QueueIterator<T, Alloc>::operator*() const
 try
@@ -149,30 +149,30 @@ catch (std::out_of_range& e) {
     throw;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 QueueIterator<T, Alloc>&
-QueueIterator<T, Alloc>::operator+=(QueueIterator::size_type offset)
+QueueIterator<T, Alloc>::operator+=(size_t offset)
 {
     item_ = ((item_ - base_) + offset) % size_ + base_;
     return *this;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 QueueIterator<T, Alloc>&
-QueueIterator<T, Alloc>::operator-=(QueueIterator::size_type offset)
+QueueIterator<T, Alloc>::operator-=(size_t offset)
 {
     item_ = (item_ >= offset) ? item_ - offset : size_ - offset + item_;
     return *this;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 QueueIterator<T, Alloc>& QueueIterator<T, Alloc>::operator++()
 {
     *this += 1;
     return *this;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 const QueueIterator<T, Alloc> QueueIterator<T, Alloc>::operator++(int)
 {
     QueueIterator<T, Alloc> copy = *this;
@@ -180,14 +180,14 @@ const QueueIterator<T, Alloc> QueueIterator<T, Alloc>::operator++(int)
     return copy;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 QueueIterator<T, Alloc>& QueueIterator<T, Alloc>::operator--()
 {
     item_ = (item_) ? item_ - 1 : size_ - 1;
     return *this;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 const QueueIterator<T, Alloc> QueueIterator<T, Alloc>::operator--(int)
 {
     QueueIterator<T, Alloc> copy = *this;
@@ -195,11 +195,11 @@ const QueueIterator<T, Alloc> QueueIterator<T, Alloc>::operator--(int)
     return copy;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 QueueIterator<T, Alloc>::QueueIterator(
-    value_type* p,
-    QueueIterator::value_type* ring,
-    const QueueIterator::size_type size
+    value_t* p,
+    QueueIterator::value_t* ring,
+    const size_t size
 )
 {
     item_ = p;
@@ -207,7 +207,7 @@ QueueIterator<T, Alloc>::QueueIterator(
     size_ = size;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Queue<T, Alloc>::Queue() :
     ring_(nullptr),
     size_(0),
@@ -216,15 +216,15 @@ Queue<T, Alloc>::Queue() :
     back_(0)
 {}
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Queue<T, Alloc>::~Queue()
 { clear(); }
 
-template <typename T, typename Alloc>
-Queue<T, Alloc>::Queue(Queue::size_type init_capacity) : Queue()
+template <class T, class Alloc>
+Queue<T, Alloc>::Queue(size_t init_capacity) : Queue()
 {
     if (init_capacity) {
-        size_type cap = 1;
+        size_t cap = 1;
         while (cap < init_capacity)
             cap <<= 1;
         capacity_ = cap;
@@ -232,10 +232,10 @@ Queue<T, Alloc>::Queue(Queue::size_type init_capacity) : Queue()
     }
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Queue<T, Alloc>::Queue(const std::initializer_list<T> list) : Queue()
 {
-    size_type cap = MIN_CAP;
+    size_t cap = MIN_CAP;
     while (cap < list.size())
         cap <<= 1;
     resize_(cap);
@@ -247,7 +247,7 @@ Queue<T, Alloc>::Queue(const std::initializer_list<T> list) : Queue()
     size_ = back_;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Queue<T, Alloc>::Queue(const Queue& src)
     : Queue()
 {
@@ -259,15 +259,15 @@ Queue<T, Alloc>::Queue(const Queue& src)
         front_ = src.front_;
     }
 
-    for (size_type i = 0; i < src.size_; ++i)
+    for (size_t i = 0; i < src.size_; ++i)
         alloc_traits::construct(Get_Allocator(), ring_ + i, src.ring_[i]);
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Queue<T, Alloc>::Queue(Queue&& src) noexcept : Queue()
 { this->swap(src); }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Queue<T, Alloc>&
 Queue<T, Alloc>::operator=(const Queue& rhs)
 {
@@ -278,7 +278,7 @@ Queue<T, Alloc>::operator=(const Queue& rhs)
     return *this;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Queue<T, Alloc>&
 Queue<T, Alloc>::operator=(Queue&& rhs) noexcept
 {
@@ -289,31 +289,31 @@ Queue<T, Alloc>::operator=(Queue&& rhs) noexcept
     return *this;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 const T& Queue<T, Alloc>::front() const noexcept
 { return ring_[front_]; }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 const T& Queue<T, Alloc>::back() const noexcept
 { return (back_ ? ring_[back_ - 1] : ring_[capacity_ - 1]); }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 T& Queue<T, Alloc>::front() noexcept
 { return ring_[front_]; }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 T& Queue<T, Alloc>::back() noexcept
 { return (back_ ? ring_[back_ - 1] : ring_[capacity_ - 1]); }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 bool Queue<T, Alloc>::empty() const noexcept
 { return (size_ == 0); }
 
-template <typename T, typename Alloc>
-typename Queue<T, Alloc>::size_type Queue<T, Alloc>::size() const noexcept
+template <class T, class Alloc>
+size_t Queue<T, Alloc>::size() const noexcept
 { return size_; }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 void Queue<T, Alloc>::pop() noexcept
 {
     if (size_) {
@@ -325,7 +325,7 @@ void Queue<T, Alloc>::pop() noexcept
     }
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 void Queue<T, Alloc>::clear() noexcept
 {
     if (capacity_ == 0)
@@ -340,28 +340,28 @@ void Queue<T, Alloc>::clear() noexcept
     ring_ = nullptr;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 T Queue<T, Alloc>::take_first() noexcept
 {
-    value_type value = front();
+    value_t value = std::move_if_noexcept(front());
     pop();
     return value;
 }
 
-template <typename T, typename Alloc>
-void Queue<T, Alloc>::push(const value_type& x)
+template <class T, class Alloc>
+void Queue<T, Alloc>::push(const value_t& x)
 { emplace(x); }
 
-template <typename T, typename Alloc>
-void Queue<T, Alloc>::push(value_type&& x)
+template <class T, class Alloc>
+void Queue<T, Alloc>::push(value_t&& x)
 { emplace(std::move(x)); }
 
-template <typename T, typename Alloc>
-template <typename...Args>
+template <class T, class Alloc>
+template <class...Args>
 void Queue<T, Alloc>::emplace(Args&&...args)
 {
     if (size_ == capacity_) {
-        size_type new_capacity = capacity_ ? (capacity_ * 2) : MIN_CAP;
+        size_t new_capacity = capacity_ ? (capacity_ * 2) : MIN_CAP;
         resize_(new_capacity);
     }
 
@@ -372,64 +372,64 @@ void Queue<T, Alloc>::emplace(Args&&...args)
     ++size_;
 }
 
-template <typename T, typename Alloc>
-void Queue<T, Alloc>::move_to(Queue<T>& q)
+template <class T, class Alloc>
+void Queue<T, Alloc>::move_to(Queue<T>& other)
 try
 {
-    if (&q == this) {
+    if (&other == this) {
         throw std::invalid_argument("Queue::emplace_: "
                                     "Moving to self detected\n");
     }
-    q.emplace_(std::move(*this));
+    other.emplace_(std::move(*this));
 }
 catch (std::invalid_argument& e) {
     e.what();
     throw;
 }
 
-template <typename T, typename Alloc>
-void Queue<T, Alloc>::swap(Queue<T>& q) noexcept
+template <class T, class Alloc>
+void Queue<T, Alloc>::swap(Queue<T>& other) noexcept
 {
-    if (this != &q) {
-        std::swap(ring_, q.ring_);
-        std::swap(size_, q.size_);
-        std::swap(capacity_, q.capacity_);
-        std::swap(front_, q.front_);
-        std::swap(back_, q.back_);
+    if (this != &other) {
+        std::swap(ring_, other.ring_);
+        std::swap(size_, other.size_);
+        std::swap(capacity_, other.capacity_);
+        std::swap(front_, other.front_);
+        std::swap(back_, other.back_);
     }
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 typename Queue<T, Alloc>::iterator
 Queue<T, Alloc>::begin() noexcept
 {
-    return QueueIterator<value_type, allocator_type>(
+    return QueueIterator<value_t, allocator_t>(
         ring_ + front_, ring_, capacity_);
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 typename Queue<T, Alloc>::iterator
 Queue<T, Alloc>::end() noexcept
 {
-    return QueueIterator<value_type, allocator_type>(
+    return QueueIterator<value_t, allocator_t>(
         ring_ + back_, ring_, capacity_);
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 Alloc& Queue<T, Alloc>::Get_Allocator()
 {
-    static auto allocator = allocator_type();
+    static auto allocator = allocator_t();
     return allocator;
 }
 
-template <typename T, typename Alloc>
+template <class T, class Alloc>
 void
-Queue<T, Alloc>::resize_(Queue::size_type new_capacity) noexcept
+Queue<T, Alloc>::resize_(size_t new_capacity) noexcept
 {
     capacity_ = new_capacity;
     T* new_ring = alloc_traits::allocate(Get_Allocator(), capacity_);
     if (capacity_ > MIN_CAP) {
-        for (size_type it = 0; it < size_; ++it) {
+        for (size_t it = 0; it < size_; ++it) {
             alloc_traits::construct(
                 Get_Allocator(),
                 new_ring + it,
@@ -439,8 +439,8 @@ Queue<T, Alloc>::resize_(Queue::size_type new_capacity) noexcept
         }
     }
     if (ring_) {
-        size_type prev_sz = size_;
-        size_type prev_cp = capacity_;
+        size_t prev_sz = size_;
+        size_t prev_cp = capacity_;
         clear();
         size_ = prev_sz;
         capacity_ = prev_cp;
@@ -451,11 +451,11 @@ Queue<T, Alloc>::resize_(Queue::size_type new_capacity) noexcept
     back_ = size_;
 }
 
-template <typename T, typename Alloc>
-template <typename Q>
+template <class T, class Alloc>
+template <class Q>
 void Queue<T, Alloc>::emplace_(Q&& q) noexcept
 {
-    for (size_type i = q.front_; i != q.back_; i = ((i + 1) % q.capacity_))
+    for (size_t i = q.front_; i != q.back_; i = ((i + 1) % q.capacity_))
         emplace(std::move_if_noexcept(q.ring_[i]));
     q.clear();
 }

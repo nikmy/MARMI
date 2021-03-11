@@ -13,20 +13,20 @@ using thread_t = std::thread;
 using mutex_t = std::mutex;
 using lock_t = std::unique_lock<mutex_t>;
 
-template <typename X>
+template <class X>
 using func_t = std::function<X>;
 using size_t = std::size_t;
 
-template <typename T>
+template <class T>
 class Resource;
 
-template <typename T>
+template <class T>
 class Handler;
 
-template <typename T>
+template <class T>
 class Supplier;
 
-template <typename T>
+template <class T>
 class ResourceManager;
 
 enum Status
