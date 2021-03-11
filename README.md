@@ -32,11 +32,11 @@ inside container (queue, for example). Use this in 5 steps:
      ```c++
      /// data_t is your data type (T)
      
-     void   supply_data (void)  
-     data_t access_data (void)  
-     void   handle_data (data_t)
-     bool   is_full     (void)  
-     bool   is_empty    (void)
+     void   supply_data (void)  ; 
+     data_t access_data (void)  ;
+     void   handle_data (data_t);
+     bool   is_full     (void)  ;
+     bool   is_empty    (void)  ;
      ```  
   3. Create a ```Container<T>``` object  
   4. Create a ```ResourceManager<T>``` object
