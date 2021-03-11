@@ -25,18 +25,18 @@ void terminate();
 
 The main idea of this project is to encapsulate mechanisms for filling and
 multithreading processing data from the one resource inside one class.
-This class is ```ResourceManager<T>```, where ```T``` is type of data
+This class is ```ResourceManager<T>```, where ```T``` is the type of data
 inside container (queue, for example). Use this in 5 steps:  
   1. Inherit your ```Container<T>``` class from ```Resource<T>```.
   2. Define the following functions (using lambda expressions or closures):  
      ```c++
-     /// data is your data type (T)
+     /// data_t is your data type (T)
      
-     void supply_data (void)  
-     data access_data (void)  
-     void handle_data (data)
-     bool is_full     (void)  
-     bool is_empty    (void)
+     void   supply_data (void)  
+     data_t access_data (void)  
+     void   handle_data (data_t)
+     bool   is_full     (void)  
+     bool   is_empty    (void)
      ```  
   3. Create a ```Container<T>``` object  
   4. Create a ```ResourceManager<T>``` object
