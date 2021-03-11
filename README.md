@@ -83,7 +83,7 @@ value_t take_first() noexcept;
 /// Moves *this to the back of other
 void move_to(Queue<T>& other);
 
-/// Swaps *this and q
+/// Swaps *this and other
 void swap(Queue<T>& other) noexcept;
 ```
 
