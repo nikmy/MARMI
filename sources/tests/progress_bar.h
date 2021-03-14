@@ -30,10 +30,10 @@ void ProgressBar::make_progress()
 void ProgressBar::update() const
 {
     std::cout << std::string("\r[") + std::string(progress_, '#')
-              << std::string(max_progress_ - progress_, '.')
-              << std::string("] ")
-              << std::to_string(progress_ * 100 / max_progress_)
-              << std::string(" %");
+              + std::string(max_progress_ - progress_, '.')
+              + std::string("] ")
+              + std::to_string(progress_ * 100 / max_progress_)
+              + std::string(" % ");
     std::flush(std::cout);
 }
 

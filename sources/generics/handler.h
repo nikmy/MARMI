@@ -80,18 +80,16 @@ void Handler<T>::await()
 template <class T>
 void Handler<T>::awake_one()
 {
-    current_state_= STATUS_RUNNING;
+    current_state_ = STATUS_RUNNING;
     work_.notify_one();
 }
-
 
 template <class T>
 void Handler<T>::awake_all()
 {
-    current_state_= STATUS_RUNNING;
+    current_state_ = STATUS_RUNNING;
     work_.notify_all();
 }
-
 
 // Undefined behaviour
 //------------------------------------------------------------------------------

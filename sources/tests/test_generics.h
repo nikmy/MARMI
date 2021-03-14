@@ -54,13 +54,15 @@ ProgressBar bar(42);
 void handle_data(int x)
 {
     (--x)++;
-    gen::lock_t lock(stream_mtx);
 
+    volatile gen::lock_t lock(stream_mtx);
+
+    ::bar.make_progress();
     ::bar.update();
 
     stream_mtx.unlock();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 decltype(auto) test_correct_multithreading(size_t n_of_threads)
@@ -105,9 +107,6 @@ decltype(auto) test_correct_multithreading(size_t n_of_threads)
 
     x.terminate();
 
-    bar.make_progress();
-    bar.update();
-
     auto e = std::chrono::steady_clock::now();
 
     std::cout << std::endl;
@@ -125,5 +124,5 @@ void test_generics()
     test_correct_multithreading(16);
     test_correct_multithreading(32);
     test_correct_multithreading(43);
-    std::cout << "[OK] All tests completed\n" << std::endl;
+    std::cout << std::endl;
 }
