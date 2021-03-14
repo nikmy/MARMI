@@ -12,6 +12,8 @@ class Resource
 
     friend class Handler<T>;
 
+    friend class ResourceManager<T>;
+
  public:
     Resource() = default;
     Resource(const Resource&);

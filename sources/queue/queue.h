@@ -1,6 +1,7 @@
 #pragma once
 
 #include "resource.h"
+#include <queue>
 
 // Declarations
 namespace mtq
@@ -46,7 +47,8 @@ class QueueIterator
 };
 
 template <class T, class Alloc = std::allocator<T>>
-class Queue : public gen::Resource<T>
+class Queue
+    : public gen::Resource<T>
 {
  public:
     using alloc_traits = std::allocator_traits<Alloc>;
@@ -75,6 +77,7 @@ class Queue : public gen::Resource<T>
     bool empty() const noexcept;
 
     size_t size() const noexcept;
+    size_t max_size() const noexcept;
 
     void pop() noexcept;
 
@@ -86,7 +89,7 @@ class Queue : public gen::Resource<T>
     void push(value_t&& x);
 
     template <class...Args>
-    void emplace(Args&&...args);
+    void emplace(Args&& ...args);
 
     void move_to(Queue<T>& other);
 
@@ -104,7 +107,7 @@ class Queue : public gen::Resource<T>
     size_t front_;
     size_t back_;
 
-    static constexpr size_t MIN_CAP = 256;
+    static constexpr size_t MIN_CAP = 8;
     static allocator_t& Get_Allocator();
 
     void resize_(size_t new_capacity) noexcept;
@@ -121,7 +124,7 @@ namespace mtq
 template <class T, class Alloc>
 QueueIterator<T, Alloc>::QueueIterator(const QueueIterator& src)
     : item_(src.item_), base_(src.base_), size_(src.size_)
-{}
+{ }
 
 template <class T, class Alloc>
 bool QueueIterator<T, Alloc>::operator!=(const QueueIterator& rhs) const
@@ -208,20 +211,22 @@ QueueIterator<T, Alloc>::QueueIterator(
 }
 
 template <class T, class Alloc>
-Queue<T, Alloc>::Queue() :
+Queue<T, Alloc>::Queue()
+    :
     ring_(nullptr),
     size_(0),
     capacity_(0),
     front_(0),
     back_(0)
-{}
+{ }
 
 template <class T, class Alloc>
 Queue<T, Alloc>::~Queue()
 { clear(); }
 
 template <class T, class Alloc>
-Queue<T, Alloc>::Queue(size_t init_capacity) : Queue()
+Queue<T, Alloc>::Queue(size_t init_capacity)
+    : Queue()
 {
     if (init_capacity) {
         size_t cap = 1;
@@ -233,9 +238,10 @@ Queue<T, Alloc>::Queue(size_t init_capacity) : Queue()
 }
 
 template <class T, class Alloc>
-Queue<T, Alloc>::Queue(const std::initializer_list<T> list) : Queue()
+Queue<T, Alloc>::Queue(const std::initializer_list<T> list)
+    : Queue()
 {
-    size_t cap = MIN_CAP;
+    size_t cap = 1;
     while (cap < list.size())
         cap <<= 1;
     resize_(cap);
@@ -264,7 +270,8 @@ Queue<T, Alloc>::Queue(const Queue& src)
 }
 
 template <class T, class Alloc>
-Queue<T, Alloc>::Queue(Queue&& src) noexcept : Queue()
+Queue<T, Alloc>::Queue(Queue&& src) noexcept
+    : Queue()
 { this->swap(src); }
 
 template <class T, class Alloc>
@@ -314,6 +321,10 @@ size_t Queue<T, Alloc>::size() const noexcept
 { return size_; }
 
 template <class T, class Alloc>
+size_t Queue<T, Alloc>::max_size() const noexcept
+{ return capacity_; }
+
+template <class T, class Alloc>
 void Queue<T, Alloc>::pop() noexcept
 {
     if (size_) {
@@ -343,7 +354,7 @@ void Queue<T, Alloc>::clear() noexcept
 template <class T, class Alloc>
 T Queue<T, Alloc>::take_first() noexcept
 {
-    value_t value = std::move_if_noexcept(front());
+    value_t value = front();
     pop();
     return value;
 }
@@ -358,7 +369,7 @@ void Queue<T, Alloc>::push(value_t&& x)
 
 template <class T, class Alloc>
 template <class...Args>
-void Queue<T, Alloc>::emplace(Args&&...args)
+void Queue<T, Alloc>::emplace(Args&& ...args)
 {
     if (size_ == capacity_) {
         size_t new_capacity = capacity_ ? (capacity_ * 2) : MIN_CAP;
@@ -428,15 +439,13 @@ Queue<T, Alloc>::resize_(size_t new_capacity) noexcept
 {
     capacity_ = new_capacity;
     T* new_ring = alloc_traits::allocate(Get_Allocator(), capacity_);
-    if (capacity_ > MIN_CAP) {
-        for (size_t it = 0; it < size_; ++it) {
-            alloc_traits::construct(
-                Get_Allocator(),
-                new_ring + it,
-                std::move_if_noexcept(ring_[front_])
-            );
-            front_ = (front_ + 1) % (capacity_ / 2);
-        }
+    for (size_t it = 0; it < size_; ++it) {
+        alloc_traits::construct(
+            Get_Allocator(),
+            new_ring + it,
+            std::move_if_noexcept(ring_[front_])
+        );
+        front_ = (front_ + 1) % (capacity_ / 2);
     }
     if (ring_) {
         size_t prev_sz = size_;
@@ -457,7 +466,7 @@ void Queue<T, Alloc>::emplace_(Q&& q) noexcept
 {
     for (size_t i = q.front_; i != q.back_; i = ((i + 1) % q.capacity_))
         emplace(std::move_if_noexcept(q.ring_[i]));
-    q.clear();
+    q.assign();
 }
 
 }

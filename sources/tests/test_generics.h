@@ -4,12 +4,14 @@
 #include <iostream>
 #include <chrono>
 
+#include "progress_bar.h"
 #include "manager.h"
 
 using namespace gen;
 
 template <typename T>
-class ResourceImpl : public Resource<T>
+class ResourceImpl
+    : public Resource<T>
 {
  public:
     ResourceImpl()
@@ -32,7 +34,7 @@ class ResourceImpl : public Resource<T>
 
     bool is_full()
     {
-        return v.size() == CAP;
+        return v.size() == v.max_size();
     }
 
     bool is_empty()
@@ -47,44 +49,70 @@ class ResourceImpl : public Resource<T>
 
 gen::mutex_t stream_mtx;
 
+ProgressBar bar(42);
+
 void handle_data(int x)
 {
     (--x)++;
     gen::lock_t lock(stream_mtx);
-    std::cout << '#';
-    std::flush(std::cout);
+
+    ::bar.update();
+
     stream_mtx.unlock();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 decltype(auto) test_correct_multithreading(size_t n_of_threads)
 {
     ResourceImpl<int> container;
 
-    auto get_data = [&]() { return container.get_first(); };
-    auto is_full_f = [&]() { return container.is_full(); };
-    auto is_empty_f = [&]() { return container.is_empty(); };
-    auto supply_data = [&]() { container.emplace_back(42); };
+    std::atomic<int> pushed = 0;
+    std::atomic<int> popped = 0;
+
+    auto get_data = [&popped, &container]() {
+        ++popped;
+        return container.get_first();
+    };
+
+    auto supply_data = [&pushed, &container]() {
+        if (++pushed <= 43) {
+            container.emplace_back(42);
+        }
+    };
+
+    auto is_full_f = [&container]() { return container.is_full(); };
+    auto is_empty_f = [&container]() { return container.is_empty(); };
 
     ResourceManager<int> x(
         container,
         supply_data,
         get_data,
         handle_data,
-        is_full_f,
         is_empty_f,
+        is_full_f,
         n_of_threads);
 
-    std::cout << n_of_threads << ((n_of_threads / 10) ? " " : "  ") << " threads: [";
+
+    std::cout << n_of_threads << ((n_of_threads / 10) ? " " : "  ")
+              << " threads:\n";
 
     auto b = std::chrono::steady_clock::now();
     x.launch();
-    while (!container.is_empty());
+
+    while (pushed < 43);
+    while (popped < 42);
+
     x.terminate();
+
+    bar.make_progress();
+    bar.update();
+
     auto e = std::chrono::steady_clock::now();
 
-    std::cout << "]" << std::endl;
+    std::cout << std::endl;
+
+    bar.assign(42);
 
     return std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count();
 }
@@ -92,7 +120,7 @@ decltype(auto) test_correct_multithreading(size_t n_of_threads)
 void test_generics()
 {
     std::cout << "[INFO] GenericsTest is running..." << std::endl;
-    test_correct_multithreading(2);
+    test_correct_multithreading(4);
     test_correct_multithreading(8);
     test_correct_multithreading(16);
     test_correct_multithreading(32);

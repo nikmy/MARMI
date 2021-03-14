@@ -6,6 +6,10 @@
 #include "test_generics.h"
 #endif  // GENERICS_TEST
 
+#ifdef SERVER_TEST
+#include "test_server.h"
+#endif  // SERVER_TEST
+
 #include <iostream>
 
 int main() {
@@ -21,5 +25,11 @@ int main() {
     test_generics();
 #endif
 
-    std::cout << "[INFO] No more tests\n" << std::endl;
+#ifdef SERVER_TEST
+    std::cout << "[INFO] + Found test: ServerTest\n";
+    test_server();
+#endif
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::cout << "[INFO] No more tests\n";
 }
