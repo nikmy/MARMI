@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Multiple_Access_Resource_Management_Interface"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/mnt/d/GitHub/MARMI/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/mnt/d/GitHub/MARMI/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/mnt/d/GitHub/MARMI/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Multiple_Access_Resource_Management_Interface">
+				<Option output="/mnt/d/GitHub/MARMI/cmake-build-debug/Multiple_Access_Resource_Management_Interface" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/GitHub/MARMI/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DGENERICS_TEST"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/generics"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/queue"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/server"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/tests"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 Multiple_Access_Resource_Management_Interface"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Multiple_Access_Resource_Management_Interface/fast">
+				<Option output="/mnt/d/GitHub/MARMI/cmake-build-debug/Multiple_Access_Resource_Management_Interface" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/GitHub/MARMI/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DGENERICS_TEST"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/generics"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/queue"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/server"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources/tests"/>
+					<Add directory="/mnt/d/GitHub/MARMI/sources"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 Multiple_Access_Resource_Management_Interface/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/GitHub/MARMI/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/generics/gendef.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/generics/manager.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/generics/resource.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/main.cpp">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/queue/queue.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request.cpp">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request_counter.cpp">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request_counter.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request_generator.cpp">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request_generator.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request_handler.cpp">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/bd_request_handler.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/echo_server.cpp">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/server/echo_server.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/tests/progress_bar.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/tests/test_generics.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/tests/test_queue.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/sources/tests/test_server.h">
+			<Option target="Multiple_Access_Resource_Management_Interface"/>
+		</Unit>
+		<Unit filename="/mnt/d/GitHub/MARMI/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

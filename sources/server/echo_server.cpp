@@ -19,10 +19,10 @@ EchoServer::EchoServer(BDRequestCounter& counter)
 { }
 
 void EchoServer::start()
-{ queue_manager.launch(); }
+{ queue_manager.start(); }
 
 void EchoServer::stop()
-{ queue_manager.terminate(); }
+{ queue_manager.stop(); }
 
 EchoServer& GetEchoServer (BDRequestCounter& c) {
     static EchoServer server(c);

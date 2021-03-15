@@ -100,12 +100,12 @@ decltype(auto) test_correct_multithreading(size_t n_of_threads)
               << " threads:\n";
 
     auto b = std::chrono::steady_clock::now();
-    x.launch();
+    x.start();
 
     while (pushed < 43);
     while (popped < 42);
 
-    x.terminate();
+    x.stop();
 
     auto e = std::chrono::steady_clock::now();
 
