@@ -2,8 +2,6 @@
 
 #include "gendef.h"
 #include "resource.h"
-#include "handler.h"
-#include "supplier.h"
 
 namespace gen
 {

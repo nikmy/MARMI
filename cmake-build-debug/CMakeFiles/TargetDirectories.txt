@@ -1,3 +1,0 @@
-/mnt/d/GitHub/MARMI/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/d/GitHub/MARMI/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/d/GitHub/MARMI/cmake-build-debug/CMakeFiles/Multiple_Access_Resource_Management_Interface.dir
