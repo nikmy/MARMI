@@ -12,8 +12,8 @@ set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -O0 -Wall -Wextra -fsa
 
 include_directories(sources/generics sources/queue sources/server sources/tests sources)
 
-#add_definitions(-DQUEUE_TEST)
-add_definitions(-DGENERICS_TEST)
+add_definitions(-DQUEUE_TEST)
+#add_definitions(-DGENERICS_TEST)
 #add_definitions(-DSERVER_TEST)
 
 add_executable(${PROJECT_NAME} ${GENERICS_SOURCES} ${QUEUE_SOURCES} ${SERVER_SOURCES} ${TESTS_SOURCES} sources/main.cpp)

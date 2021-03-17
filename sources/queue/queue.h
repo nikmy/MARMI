@@ -97,6 +97,9 @@ class Queue
 
     iterator begin() noexcept;
     iterator end() noexcept;
+    T get_data() override;
+    bool is_full() override;
+    bool is_empty() override;
 
  private:
     value_t* ring_;
@@ -108,9 +111,10 @@ class Queue
     size_t back_;
 
     static constexpr size_t MIN_CAP = 8;
+    static constexpr size_t MAX_CAP = 4096;
     static allocator_t& Get_Allocator();
 
-    void resize_(size_t new_capacity) noexcept;
+//    void resize_(size_t new_capacity) noexcept;
 
     template <class Q = Queue<T>>
     void emplace_(Q&& q) noexcept;
@@ -232,8 +236,8 @@ Queue<T, Alloc>::Queue(size_t init_capacity)
         size_t cap = 1;
         while (cap < init_capacity)
             cap <<= 1;
-        capacity_ = cap;
-        ring_ = alloc_traits::allocate(Get_Allocator(), capacity_);
+        capacity_  = cap;
+        ring_      = alloc_traits::allocate(Get_Allocator(), capacity_);
     }
 }
 
@@ -241,11 +245,11 @@ template <class T, class Alloc>
 Queue<T, Alloc>::Queue(const std::initializer_list<T> list)
     : Queue()
 {
-    size_t cap = 1;
-    while (cap < list.size())
-        cap <<= 1;
-    resize_(cap);
-    back_ = 0;
+    capacity_ = MIN_CAP;
+    while (capacity_ < list.size())
+        capacity_ <<= 1;
+    ring_     = alloc_traits::allocate(Get_Allocator(), capacity_);
+    front_    = back_ = 0;
     for (auto& item : list) {
         alloc_traits::construct(Get_Allocator(), ring_ + back_, item);
         ++back_;
@@ -258,11 +262,11 @@ Queue<T, Alloc>::Queue(const Queue& src)
     : Queue()
 {
     if (src.capacity_) {
-        ring_ = alloc_traits::allocate(Get_Allocator(), src.capacity_);
+        ring_     = alloc_traits::allocate(Get_Allocator(), src.capacity_);
         capacity_ = src.capacity_;
-        size_ = src.size_;
-        back_ = src.back_;
-        front_ = src.front_;
+        size_     = src.size_;
+        back_     = src.back_;
+        front_    = src.front_;
     }
 
     for (size_t i = 0; i < src.size_; ++i)
@@ -347,8 +351,8 @@ void Queue<T, Alloc>::clear() noexcept
 
     alloc_traits::deallocate(Get_Allocator(), ring_, capacity_);
     capacity_ = size_ = 0;
-    front_ = back_ = 0;
-    ring_ = nullptr;
+    front_    = back_ = 0;
+    ring_     = nullptr;
 }
 
 template <class T, class Alloc>
@@ -373,7 +377,28 @@ void Queue<T, Alloc>::emplace(Args&& ...args)
 {
     if (size_ == capacity_) {
         size_t new_capacity = capacity_ ? (capacity_ * 2) : MIN_CAP;
-        resize_(new_capacity);
+        T* new_ring = alloc_traits::allocate(Get_Allocator(), new_capacity);
+        alloc_traits::construct(
+            Get_Allocator(), new_ring + size_, std::forward<Args>(args)...
+        );
+
+        for (size_t it = 0; it < size_; ++it) {
+            alloc_traits::construct(
+                Get_Allocator(),
+                new_ring + it,
+                std::move_if_noexcept(ring_[front_])
+            );
+            front_ = (front_ + 1) & (capacity_ - 1);
+        }
+
+        size_t t = size_ + 1;
+        clear();
+        size_ = t;
+        back_ = t;
+        capacity_ = new_capacity;
+        ring_ = new_ring;
+
+        return;
     }
 
     alloc_traits::construct(
@@ -433,40 +458,61 @@ Alloc& Queue<T, Alloc>::Get_Allocator()
     return allocator;
 }
 
-template <class T, class Alloc>
-void
-Queue<T, Alloc>::resize_(size_t new_capacity) noexcept
-{
-    capacity_ = new_capacity;
-    T* new_ring = alloc_traits::allocate(Get_Allocator(), capacity_);
-    for (size_t it = 0; it < size_; ++it) {
-        alloc_traits::construct(
-            Get_Allocator(),
-            new_ring + it,
-            std::move_if_noexcept(ring_[front_])
-        );
-        front_ = (front_ + 1) % (capacity_ / 2);
-    }
-    if (ring_) {
-        size_t prev_sz = size_;
-        size_t prev_cp = capacity_;
-        clear();
-        size_ = prev_sz;
-        capacity_ = prev_cp;
-    }
-    alloc_traits::deallocate(Get_Allocator(), ring_, capacity_);
-    ring_ = new_ring;
-    front_ = 0;
-    back_ = size_;
-}
+//template <class T, class Alloc>
+//void
+//Queue<T, Alloc>::resize_(size_t new_capacity) noexcept
+//{
+//    capacity_ = new_capacity;
+//    T* new_ring = alloc_traits::allocate(Get_Allocator(), capacity_);
+//    for (size_t it = 0; it < size_; ++it) {
+//        alloc_traits::construct(
+//            Get_Allocator(),
+//            new_ring + it,
+//            std::move_if_noexcept(ring_[front_])
+//        );
+//        front_ = (front_ + 1) % (capacity_ / 2);
+//    }
+//    if (ring_) {
+//        size_t prev_sz = size_;
+//        size_t prev_cp = capacity_;
+//        clear();
+//        size_          = prev_sz;
+//        capacity_      = prev_cp;
+//    }
+//    alloc_traits::deallocate(Get_Allocator(), ring_, capacity_);
+//    ring_  = new_ring;
+//    front_ = 0;
+//    back_  = size_;
+//}
 
 template <class T, class Alloc>
 template <class Q>
 void Queue<T, Alloc>::emplace_(Q&& q) noexcept
 {
-    for (size_t i = q.front_; i != q.back_; i = ((i + 1) % q.capacity_))
-        emplace(std::move_if_noexcept(q.ring_[i]));
-    q.assign();
+    size_t      it = q.front_;
+    for (size_t i  = 0; i < q.size_; ++i) {
+        emplace(std::move_if_noexcept(q.ring_[it]));
+        it = (it + 1) & (q.capacity_ - 1);
+    }
+    q.clear();
+}
+
+template <class T, class Alloc>
+T Queue<T, Alloc>::get_data()
+{
+    return take_first();
+}
+
+template <class T, class Alloc>
+bool Queue<T, Alloc>::is_full()
+{
+    return size_ == capacity_;
+}
+
+template <class T, class Alloc>
+bool Queue<T, Alloc>::is_empty()
+{
+    return empty();
 }
 
 }

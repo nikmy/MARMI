@@ -19,8 +19,9 @@ class Resource
     Resource(const Resource&);
     ~Resource() = default;
 
- private:
-    mutex_t access_mutex_;
+    virtual T get_data() = 0;
+    virtual bool is_full() = 0;
+    virtual bool is_empty() = 0;
 };
 
 template <class T>

@@ -14,14 +14,21 @@ class ResourceImpl
     : public Resource<T>
 {
  public:
+    static constexpr size_t CAP = 42;
+
+    std::atomic_int pushed;
+    std::atomic_int popped;
+
     ResourceImpl()
     {
+        pushed = 0;
+        popped = 0;
         v.reserve(CAP);
     }
 
     T get_first()
     {
-        int x = v.back();
+        T x = v.back();
         v.pop_back();
         return x;
     }
@@ -32,97 +39,89 @@ class ResourceImpl
         v.emplace_back(std::forward<Args>(args)...);
     }
 
-    bool is_full()
+    T get_data() override
     {
-        return v.size() == v.max_size();
+        return get_first();
     }
 
-    bool is_empty()
+    bool is_full() override
+    {
+        return v.size() == CAP;
+    }
+
+    bool is_empty() override
     {
         return v.empty();
     }
 
  private:
     std::vector<T> v;
-    static constexpr size_t CAP = 42;
 };
 
 gen::mutex_t stream_mtx;
 
 ProgressBar bar(42);
 
-void handle_data(int x)
-{
-    (--x)++;
-
-    volatile gen::lock_t lock(stream_mtx);
-
-    ::bar.make_progress();
-    ::bar.update();
-
-    stream_mtx.unlock();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-}
-
-decltype(auto) test_correct_multithreading(size_t n_of_threads)
+void test_correct_concurrency(size_t n_of_threads)
 {
     ResourceImpl<int> container;
 
-    std::atomic<int> pushed = 0;
-    std::atomic<int> popped = 0;
+    auto handle_data = [&container](int x) {
+        (--x)++;
 
-    auto get_data = [&popped, &container]() {
-        ++popped;
-        return container.get_first();
+        gen::lock_t lock(stream_mtx);
+
+        container.popped++;
+
+        ::bar.make_progress();
+        ::bar.update();
+
+        stream_mtx.unlock();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     };
 
-    auto supply_data = [&pushed, &container]() {
-        if (++pushed <= 43) {
+    auto supply_data = [&container]() {
+        if (container.pushed < 42) {
+            container.pushed++;
             container.emplace_back(42);
         }
     };
 
-    auto is_full_f = [&container]() { return container.is_full(); };
-    auto is_empty_f = [&container]() { return container.is_empty(); };
-
     ResourceManager<int> x(
         container,
         supply_data,
-        get_data,
         handle_data,
-        is_empty_f,
-        is_full_f,
-        n_of_threads);
+        [] { },
+        [] { },
+        n_of_threads - n_of_threads / 2,
+        n_of_threads / 2);
 
+    std::cout << "[+] Test concurrency with " << n_of_threads << " threads:\n";
 
-    std::cout << n_of_threads << ((n_of_threads / 10) ? " " : "  ")
-              << " threads:\n";
+    bar.update();
 
-    auto b = std::chrono::steady_clock::now();
     x.start();
 
-    while (pushed < 43);
-    while (popped < 42);
+    while (container.pushed < 42);
+    while (container.popped < 42);
 
     x.stop();
-
-    auto e = std::chrono::steady_clock::now();
 
     std::cout << std::endl;
 
     bar.assign(42);
 
-    return std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count();
 }
 
 void test_generics()
 {
     std::cout << "[INFO] GenericsTest is running..." << std::endl;
-    test_correct_multithreading(4);
-    test_correct_multithreading(8);
-    test_correct_multithreading(16);
-    test_correct_multithreading(32);
-    test_correct_multithreading(43);
+
+    test_correct_concurrency(4);
+    test_correct_concurrency(8);
+    test_correct_concurrency(16);
+    test_correct_concurrency(32);
+
     std::cout << std::endl;
 }

@@ -9,13 +9,16 @@ EchoServer::EchoServer(BDRequestCounter& counter)
       request_queue_(32),
       queue_manager(
           request_queue_,
-          [&]() { BDRequest x = generator_.getRequest(); request_queue_.push(x); },
-          [&]() { return request_queue_.take_first(); },
-          [&](BDRequest r) { request_handler_.process(r); },
-          [&]() { return request_queue_.empty(); },
-          [&]() { return request_queue_.size() == request_queue_.max_size(); },
-          8
-          )
+          [&]() {
+              BDRequest x = generator_.getRequest();
+              request_queue_.push(x);
+          },
+          [&](BDRequest r) { request_handler_.process(std::move(r)); },
+          [&]() { },
+          [&]() { },
+          6,
+          2
+      )
 { }
 
 void EchoServer::start()
@@ -24,7 +27,8 @@ void EchoServer::start()
 void EchoServer::stop()
 { queue_manager.stop(); }
 
-EchoServer& GetEchoServer (BDRequestCounter& c) {
+EchoServer& GetEchoServer(BDRequestCounter& c)
+{
     static EchoServer server(c);
     return server;
 }

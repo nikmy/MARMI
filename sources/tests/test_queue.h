@@ -24,7 +24,7 @@ void test_queue()
         q.pop();
         assert(q.empty());
 
-        std::cout << "[+] Test 1 passed\n";
+        std::cout << "[+] Test 1 passed" << std::endl;
     }
 
     // Test 2
@@ -37,7 +37,7 @@ void test_queue()
         assert(q.front() == 2);
         assert(q.back() == 3);
 
-        std::cout << "[+] Test 2 passed\n";
+        std::cout << "[+] Test 2 passed" << std::endl;
     }
 
     // Test 3
@@ -53,7 +53,7 @@ void test_queue()
         assert(q.empty());
         assert(!w.empty());
 
-        std::cout << "[+] Test 3 passed\n";
+        std::cout << "[+] Test 3 passed" << std::endl;
     }
 
     // Test 4
@@ -69,7 +69,7 @@ void test_queue()
         Queue<int> dq(std::move(q));
         assert(dq.back() == 3);
 
-        std::cout << "[+] Test 4 passed\n";
+        std::cout << "[+] Test 4 passed" << std::endl;
     }
 
     // Test 5
@@ -89,7 +89,7 @@ void test_queue()
         }
 
         delete[] q;
-        std::cout << "[+] Test 5 passed\n";
+        std::cout << "[+] Test 5 passed" << std::endl;
     }
 
     // Test 6
@@ -115,7 +115,7 @@ void test_queue()
         }
 
         delete[] q;
-        std::cout << "[+] Test 6 passed\n";
+        std::cout << "[+] Test 6 passed" << std::endl;
     }
 
     // Test 7
@@ -134,7 +134,7 @@ void test_queue()
         q.emplace(std::string(s));
         assert(s == "safe");
 
-        std::cout << "[+] Test 7 passed\n";
+        std::cout << "[+] Test 7 passed" << std::endl;
     }
 
     // Test 8
@@ -152,7 +152,7 @@ void test_queue()
         while (!w.empty())
             w.pop();
 
-        std::cout << "[+] Test 8 passed\n";
+        std::cout << "[+] Test 8 passed" << std::endl;
     }
 
     // Test 9
@@ -164,7 +164,7 @@ void test_queue()
             ++i;
         }
 
-        std::cout << "[+] Test 9 passed\n";
+        std::cout << "[+] Test 9 passed" << std::endl;
     }
 
     // Test 10
@@ -186,7 +186,7 @@ void test_queue()
         assert(q.take_first() == q.back());
         assert(q.size() == 9);
 
-        std::cout << "[+] Test 10 passed\n";
+        std::cout << "[+] Test 10 passed" << std::endl;
     }
 
     std::cout << "[OK] All tests passed\n" << std::endl;
