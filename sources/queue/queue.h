@@ -1,13 +1,10 @@
 #pragma once
 
-#include "resource.h"
-#include <queue>
-
 // Declarations
-namespace mtq
+namespace tsq
 {
 
-using gen::size_t;
+using std::size_t;
 
 template <class T, class Alloc>
 class Queue;
@@ -48,7 +45,6 @@ class QueueIterator
 
 template <class T, class Alloc = std::allocator<T>>
 class Queue
-    : public gen::Resource<T>
 {
  public:
     using alloc_traits = std::allocator_traits<Alloc>;
@@ -74,6 +70,7 @@ class Queue
     value_t& front() noexcept;
     value_t& back() noexcept;
 
+    bool full() const noexcept;
     bool empty() const noexcept;
 
     size_t size() const noexcept;
@@ -98,10 +95,6 @@ class Queue
     iterator begin() noexcept;
     iterator end() noexcept;
 
-    T get_data() override;
-    bool is_full() override;
-    bool is_empty() override;
-
  private:
     value_t* data_;
 
@@ -123,7 +116,7 @@ class Queue
 }
 
 // Definitions
-namespace mtq
+namespace tsq
 {
 
 template <class T, class Alloc>
@@ -321,6 +314,10 @@ T& Queue<T, Alloc>::back() noexcept
 { return (back_ ? data_[back_ - 1] : data_[capacity_ - 1]); }
 
 template <class T, class Alloc>
+bool Queue<T, Alloc>::full() const noexcept
+{ return size_ == capacity_; }
+
+template <class T, class Alloc>
 bool Queue<T, Alloc>::empty() const noexcept
 { return (size_ == 0); }
 
@@ -475,17 +472,5 @@ void Queue<T, Alloc>::emplace_(Q&& q) noexcept
     }
     q.clear();
 }
-
-template <class T, class Alloc>
-T Queue<T, Alloc>::get_data()
-{ return take_first(); }
-
-template <class T, class Alloc>
-bool Queue<T, Alloc>::is_full()
-{ return size_ == capacity_; }
-
-template <class T, class Alloc>
-bool Queue<T, Alloc>::is_empty()
-{ return empty(); }
 
 }

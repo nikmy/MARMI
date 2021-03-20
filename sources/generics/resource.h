@@ -17,10 +17,10 @@ class Resource
  public:
     Resource() = default;
     Resource(const Resource&);
-    ~Resource() = default;
+    virtual ~Resource() = default;
 
+    virtual void put_data() = 0;
     virtual T get_data() = 0;
-    virtual bool is_full() = 0;
     virtual bool is_empty() = 0;
 };
 

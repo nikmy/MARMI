@@ -48,7 +48,7 @@ If you want more control / features, the class is open to extensions.
 **P.S. Function ```handle_data``` should be implemented considering that it will
 be called by multiple threads, and it must protect the used resources.** 
 
-### ```namespace mtq```
+### ```namespace tsq```
 
 ```c++
 template <
