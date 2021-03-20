@@ -6,6 +6,10 @@
 #include "test_generics.h"
 #endif  // GENERICS_TEST
 
+#ifdef SCHEDULER_TEST
+#include "test_scheduler.h"
+#endif  // SCHEDULER_TEST
+
 #ifdef SERVER_TEST
 #include "test_server.h"
 #endif  // SERVER_TEST
@@ -16,13 +20,18 @@ int main() {
     std::cout << "[INFO] Looking up for tests...\n" << std::endl;
 
 #ifdef QUEUE_TEST
-    std::cout << "[INFO] + Found test: QueueTest\n";
+    std::cout << "[INFO] + Found test: QueueTest" << std::endl;
     test_queue();
 #endif
 
 #ifdef GENERICS_TEST
-    std::cout << "[INFO] + Found test: GenericsTest\n";
+    std::cout << "[INFO] + Found test: GenericsTest" << std::endl;
     test_generics();
+#endif
+
+#ifdef SCHEDULER_TEST
+    std::cout << "[INFO] + Found test: SchedulerTest" << std::endl;
+    test_scheduler();
 #endif
 
 #ifdef SERVER_TEST

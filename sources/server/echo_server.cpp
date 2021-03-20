@@ -16,8 +16,8 @@ EchoServer::EchoServer(BDRequestCounter& counter)
           [&](BDRequest r) { request_handler_.process(std::move(r)); },
           [&]() { },
           [&]() { },
-          6,
-          2
+          7,
+          1
       )
 { }
 

@@ -11,7 +11,7 @@ using namespace mtq;
 
 void test_queue()
 {
-    std::cout << "[INFO] QueueTest is running...\n";
+    std::cout << "[INFO] QueueTest is running..." << std::endl;
     // Test 1
     {
         Queue<int> q;

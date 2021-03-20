@@ -14,29 +14,28 @@ using size_t = gen::size_t;
 using thread_t = gen::thread_t;
 using mutex_t = gen::mutex_t;
 
-class ThreadPool
+class TaskScheduler
 {
  public:
-    ThreadPool() = delete;
-    ThreadPool(const ThreadPool&) = delete;
+    friend TaskScheduler& GetScheduler();
 
-    ~ThreadPool();
+    TaskScheduler() = delete;
+    TaskScheduler(const TaskScheduler&) = delete;
+
+    ~TaskScheduler();
 
     void add_job();
+    void finish();
     void launch();
     void shutdown();
 
  private:
-    mtq::Queue<task_t> queue_;
-    std::vector<thread_t> workers_;
-    cond_var_t is_not_empty;
-    mutex_t access_mutex_;
-    bool terminate_pool_;
-    bool stopped_;
+    mtq::Queue<task_t>    queue_;
+    gen::ResourceManager<task_t> manager;
 
-    explicit ThreadPool(size_t n_of_threads, size_t max_size);
-
-    [[noreturn]] void routine_();
+    explicit TaskScheduler(size_t n_of_threads, size_t max_size);
 };
+
+TaskScheduler& GetScheduler();
 
 }

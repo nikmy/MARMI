@@ -16,9 +16,9 @@ class EchoServer
     void start();
     void stop();
 
-// private:
     friend EchoServer& GetEchoServer(BDRequestCounter& c);
 
+// private:
     BDRequestGenerator generator_;
     BDRequestHandler request_handler_;
 

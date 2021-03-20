@@ -34,8 +34,9 @@ class ResourceManager
  private:
     resource_t& resource_;
     mutex_t access_mutex_;
+    mutex_t supply_mutex_;
 
-    func_t<void()>       supply_;
+    func_t<void()>              supply_;
     func_t<void(const data_t&)> handle_;
 
     func_t<void()> save_session_;
@@ -47,8 +48,8 @@ class ResourceManager
     Status handler_state_;
     Status supplier_state_;
 
-    conditional_variable_t is_not_empty_;
-    conditional_variable_t is_not_full_;
+    cond_var_t is_not_empty_;
+    cond_var_t is_not_full_;
 
     std::vector<thread_t> workers_;
     std::vector<thread_t> employers_;
@@ -72,6 +73,7 @@ ResourceManager<T>::ResourceManager(
 )
     : resource_(resource),
       access_mutex_(),
+      supply_mutex_(),
       supply_(supply_f),
       handle_(handle_f),
       save_session_(save_session_f),
@@ -92,6 +94,9 @@ void ResourceManager<T>::start()
 {
     restore_session_();
 
+    workers_.reserve(n_of_workers_);
+    employers_.reserve(n_of_employers_);
+
     for (size_t i = 0; i < n_of_workers_; ++i) {
         workers_.emplace_back([&]() { worker_routine_(); });
     }
@@ -107,6 +112,10 @@ void ResourceManager<T>::start()
 template <class T>
 void ResourceManager<T>::stop()
 {
+    if (supplier_state_ == STATUS_STOPPED && handler_state_ == STATUS_STOPPED) {
+        return;
+    }
+
     supplier_state_ = STATUS_STOPPED;
     handler_state_  = STATUS_STOPPED;
 
@@ -129,7 +138,7 @@ void ResourceManager<T>::employer_routine_()
 {
     while (supplier_state_ == STATUS_WAITING);
     while (supplier_state_ == STATUS_RUNNING) {
-        lock_t lock(access_mutex_);
+        lock_t lock(supply_mutex_);
         is_not_full_.wait(
             lock,
             [&] {

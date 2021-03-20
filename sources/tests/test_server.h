@@ -10,9 +10,10 @@ using namespace server;
 
 void test_server()
 {
-    std::cout << "[INFO] ServerTest is running...\n";
+    std::cout << "[INFO] ServerTest is running..." << std::endl;
 
-    ProgressBar      bar(100);
+    ProgressBar bar(100);
+
     BDRequestCounter checker{};
     EchoServer& server = GetEchoServer(checker);
 
@@ -30,7 +31,7 @@ void test_server()
 
     std::cout << std::endl << "[+] Stopping server..." << std::endl;
 
-    std::cout << "[+] Server stopped normally" << std::endl;
+    std::cout << "[+] Server stopped_ normally" << std::endl;
 
     std::cout << "[+] " << server.request_queue_.size()
               << " requests saved" << std::endl;
@@ -55,7 +56,7 @@ void test_server()
 
     server.stop();
 
-    std::cout << "[+] Server stopped normally" << std::endl;
+    std::cout << "[+] Server stopped_ normally" << std::endl;
 
     std::cout << "[!] " << checker.get_all()
               << " requests have been processed, "

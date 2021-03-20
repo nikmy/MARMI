@@ -1,41 +1,51 @@
-#include "thread_pool.h"
+#include "task_scheduler.h"
 
 namespace ts
 {
 
-ThreadPool::ThreadPool(size_t n_of_threads, size_t max_size)
-    : queue_(max_size)
+TaskScheduler::TaskScheduler(
+    size_t n_of_threads,
+    size_t max_size
+)
+    : queue_(max_size),
+      manager(
+          queue_,
+          [&] { add_job(); },
+          [](const task_t& job) { job(); },
+          [&] { finish(); },
+          []() { },
+          n_of_threads,
+          1, true
+      )
+{ }
+
+TaskScheduler::~TaskScheduler()
+{ manager.stop(); }
+
+void TaskScheduler::launch()
+{ manager.start(); }
+
+void TaskScheduler::shutdown()
+{ manager.stop(); }
+
+void TaskScheduler::add_job()
 {
-    workers_.reserve(n_of_threads);
-    terminate_pool_ = false;
-    stopped_        = true;
+    std::this_thread::sleep_for(std::chrono::milliseconds(6));
+    queue_.emplace([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(24));
+    });
 }
 
-ThreadPool::~ThreadPool()
+TaskScheduler& GetScheduler()
 {
-    if (!stopped_)
-        shutdown();
-    workers_.clear();
+    static TaskScheduler scheduler = TaskScheduler(2, 1024);
+    return scheduler;
 }
 
-void ThreadPool::launch()
+void TaskScheduler::finish()
 {
-    for (size_t i = 0; i < workers_.max_size(); ++i) {
-        workers_.emplace_back([&] { routine_(); });
+    while (!queue_.is_empty()) {
+        queue_.get_data()();
     }
-    stopped_ = false;
 }
-
-void ThreadPool::shutdown()
-{
-    for (auto& t : workers_)
-        t.join();
-    stopped_ = true;
-}
-
-void ThreadPool::add_job()
-{
-
-}
-
 }

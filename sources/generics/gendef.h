@@ -8,7 +8,7 @@
 
 namespace gen
 {
-using conditional_variable_t = std::condition_variable;
+using cond_var_t = std::condition_variable;
 using thread_t = std::thread;
 using mutex_t = std::mutex;
 using lock_t = std::unique_lock<mutex_t>;

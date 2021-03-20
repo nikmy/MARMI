@@ -19,8 +19,8 @@ ResourceManager
             size_t                      n_of_threads_limit
         );
 
-virtual void start();
-virtual void stop();
+virtual void launch();
+virtual void shutdown();
 ```
 
 The main idea of this project is to encapsulate mechanisms for filling and
@@ -40,9 +40,9 @@ inside container (queue, for example). Use this in 5 steps:
      ```  
   3. Create a ```Container<T>``` object  
   4. Create a ```ResourceManager<T>``` object
-  5. Call ```manager.start()```  
+  5. Call ```manager.launch()```  
 
-If you want to stop processing, use ```manager.stop()```  
+If you want to shutdown processing, use ```manager.shutdown()```  
 If you want more control / features, the class is open to extensions.
 
 **P.S. Function ```handle_data``` should be implemented considering that it will
