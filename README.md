@@ -4,10 +4,9 @@
 
 ```c++
 template <
-class T,
-class Alloc = std::allocator<T>
-> class Queue :
-public gen::Resource<T>
+        class T,
+        class Alloc = std::allocator<T>
+> class Queue
 ```
 
 Thread-safety queue template.
