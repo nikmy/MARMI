@@ -1,7 +1,6 @@
 #pragma once
 
-#include <thread>
-
+#include "handler.h"
 #include "bd_request.h"
 #include "bd_request_counter.h"
 
@@ -10,11 +9,13 @@ namespace server
 
 using BDResponse = RData;
 
-class BDRequestHandler
+class BDRequestHandler : public gen::DataHandler<BDRequest>
 {
  public:
     explicit BDRequestHandler(BDRequestCounter& c);
-    void process(BDRequest request);
+
+ private:
+    void process(BDRequest&& data) override;
 
  private:
     BDRequestCounter& counter_;

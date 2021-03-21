@@ -31,12 +31,12 @@ void test_server()
 
     std::cout << std::endl << "[+] Stopping server..." << std::endl;
 
-    std::cout << "[+] Server stopped_ normally" << std::endl;
-
-    std::cout << "[+] " << server.request_queue_.size()
-              << " requests saved" << std::endl;
-
     server.stop();
+
+    std::cout << "[+] Server stopped normally" << std::endl;
+
+    std::cout << "[+] " << checker.get_all_ignored()
+              << " requests are pending" << std::endl;
 
     bar.assign(100);
 
@@ -52,20 +52,18 @@ void test_server()
         std::this_thread::sleep_for(std::chrono::milliseconds(600));
     }
 
-    std::cout << std::endl << "[+] Stopping server..." << std::endl;
+    std::cout << std::endl << "[+] Shutdown server..." << std::endl;
 
-    server.stop();
+    server.shutdown();
 
-    std::cout << "[+] Server stopped_ normally" << std::endl;
+    std::cout << "[+] Server shutdown normally" << std::endl;
 
     std::cout << "[!] " << checker.get_all()
               << " requests have been processed, "
-              << server.request_queue_.size()
-              << " saved, "
-              << checker.get_all_ignored() - server.request_queue_.size()
+              << checker.get_all_ignored()
               << " ignored\n";
 
-    if (checker.get_all_ignored() - server.request_queue_.size()) {
+    if (checker.get_all_ignored()) {
         std::cerr << "[-] Test failed.\n" << std::endl;
     }
     else {

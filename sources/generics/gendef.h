@@ -3,6 +3,7 @@
 #include <condition_variable>
 #include <functional>
 #include <atomic>
+#include <future>
 #include <thread>
 #include <mutex>
 
@@ -15,16 +16,13 @@ using lock_t = std::unique_lock<mutex_t>;
 
 template <class X>
 using func_t = std::function<X>;
-using size_t = std::size_t;
+using size_t = unsigned long;
 
 template <class T>
 class Resource;
 
 template <class T>
-class Handler;
-
-template <class T>
-class Supplier;
+class DataHandler;
 
 template <class T>
 class ResourceManager;

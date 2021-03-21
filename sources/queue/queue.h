@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iterator>
+#include <mutex>
+
 // Declarations
 namespace tsq
 {
@@ -104,8 +107,9 @@ class Queue
     size_t front_;
     size_t back_;
 
+    mutable std::mutex access_mutex_;
+
     static constexpr size_t MIN_CAP = 8;
-    static constexpr size_t MAX_CAP = 4096;
     static allocator_t& Get_Allocator();
 
 //    void resize_(size_t new_capacity) noexcept;
@@ -315,11 +319,17 @@ T& Queue<T, Alloc>::back() noexcept
 
 template <class T, class Alloc>
 bool Queue<T, Alloc>::full() const noexcept
-{ return size_ == capacity_; }
+{
+    std::lock_guard<std::mutex> guard(access_mutex_);
+    return size_ == capacity_;
+}
 
 template <class T, class Alloc>
 bool Queue<T, Alloc>::empty() const noexcept
-{ return (size_ == 0); }
+{
+    std::lock_guard<std::mutex> guard(access_mutex_);
+    return (size_ == 0);
+}
 
 template <class T, class Alloc>
 size_t Queue<T, Alloc>::size() const noexcept
@@ -359,7 +369,8 @@ void Queue<T, Alloc>::clear() noexcept
 template <class T, class Alloc>
 T Queue<T, Alloc>::take_first() noexcept
 {
-//    if (!size_) throw std::exception();
+    std::lock_guard<std::mutex> guard(access_mutex_);
+
     value_t value = front();
     pop();
     return value;
@@ -371,12 +382,13 @@ void Queue<T, Alloc>::push(const value_t& x)
 
 template <class T, class Alloc>
 void Queue<T, Alloc>::push(value_t&& x)
-{ emplace(std::move(x)); }
+{ emplace(std::move_if_noexcept(x)); }
 
 template <class T, class Alloc>
 template <class...Args>
 void Queue<T, Alloc>::emplace(Args&& ...args)
 {
+    std::lock_guard<std::mutex> guard(access_mutex_);
     if (size_ == capacity_) {
         size_t new_capacity = capacity_ ? (capacity_ * 2) : MIN_CAP;
         T* new_ring = alloc_traits::allocate(Get_Allocator(), new_capacity);

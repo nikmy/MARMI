@@ -9,7 +9,7 @@ BDRequestGenerator::BDRequestGenerator(BDRequestCounter& c)
     : counter_(c)
 { }
 
-BDRequest BDRequestGenerator::getRequest()
+BDRequest BDRequestGenerator::get_data()
 {
     static size_t id = 0;
     ++id;
@@ -36,6 +36,11 @@ BDRequest BDRequestGenerator::getRequest()
 
     counter_.inc(r);
     return r;
+}
+
+bool BDRequestGenerator::is_empty()
+{
+    return false;
 }
 
 }

@@ -15,18 +15,17 @@ class EchoServer
  public:
     void start();
     void stop();
+    void shutdown();
 
     friend EchoServer& GetEchoServer(BDRequestCounter& c);
 
-// private:
+ private:
     BDRequestGenerator generator_;
-    BDRequestHandler request_handler_;
+    BDRequestHandler   request_handler_;
 
-    mtq::Queue<BDRequest> request_queue_;
-    gen::ResourceManager<BDRequest> queue_manager;
+    gen::ResourceManager<BDRequest> requests_manager_;
 
     explicit EchoServer(BDRequestCounter& counter);
-
 };
 
 EchoServer& GetEchoServer(BDRequestCounter& c);

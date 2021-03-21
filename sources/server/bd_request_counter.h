@@ -14,7 +14,6 @@ class BDRequestCounter
     void inc(const BDRequest& r);
     void dec(const BDRequest& r);
 
-    bool is_balanced() const;
     int64_t get_all();
     int64_t get_all_ignored() const;
 

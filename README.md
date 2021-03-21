@@ -16,7 +16,7 @@ ResourceManager
             const func_t<void(data_t)>  & handle_f,
             const func_t<bool()>        & is_full,
             const func_t<bool()>        & is_empty,
-            size_t                      n_of_threads_limit
+            size_t                      n_of_threads_limit_
         );
 
 virtual void launch();
