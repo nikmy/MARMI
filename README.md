@@ -1,6 +1,6 @@
 ## Multiple Access Resource Management Interface
 
-### ```namespace tsq```
+### ```namespace gen```
 
 ```c++
 template <

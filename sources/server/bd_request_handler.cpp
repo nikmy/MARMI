@@ -9,7 +9,7 @@ BDRequestHandler::BDRequestHandler(BDRequestCounter& c)
 
 void BDRequestHandler::process(BDRequest&& request)
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     counter_.dec(request);
 }
 

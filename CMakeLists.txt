@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 project(Multiple_Access_Resource_Management_Interface)
 set(CMAKE_CXX_STANDARD 20)
 
-set(GENERICS_SOURCES sources/generics/gendef.h sources/generics/resource.h sources/generics/manager.h sources/generics/handler.h)
-set(QUEUE_SOURCES sources/queue/queue.h)
-set(SERVER_SOURCES sources/queue/queue.h sources/server/bd_request.cpp sources/server/bd_request.h sources/server/bd_request_handler.cpp sources/server/bd_request_handler.h sources/server/bd_request_generator.cpp sources/server/bd_request_generator.h sources/server/echo_server.cpp sources/server/echo_server.h sources/server/bd_request_counter.cpp sources/server/bd_request_counter.h)
+set(GENERICS_SOURCES sources/generics/gendef.h sources/generics/resource.h sources/generics/manager.h sources/generics/handler.h sources/generics/genexcept.h)
+set(QUEUE_SOURCES sources/generics/queue.h)
+set(SERVER_SOURCES sources/generics/queue.h sources/server/bd_request.cpp sources/server/bd_request.h sources/server/bd_request_handler.cpp sources/server/bd_request_handler.h sources/server/bd_request_generator.cpp sources/server/bd_request_generator.h sources/server/echo_server.cpp sources/server/echo_server.h sources/server/bd_request_counter.cpp sources/server/bd_request_counter.h)
 set(TESTS_SOURCES sources/tests/test_generics.h sources/tests/test_queue.h sources/tests/test_server.h sources/tests/progress_bar.h sources/tests/tests.h)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O2 -Wall -Wextra -fsanitize=address -fsanitize=undefined")

@@ -35,12 +35,13 @@ BDRequest BDRequestGenerator::get_data()
     }
 
     counter_.inc(r);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
+
     return r;
 }
 
 bool BDRequestGenerator::is_empty()
-{
-    return false;
-}
+{ return false; }
 
 }

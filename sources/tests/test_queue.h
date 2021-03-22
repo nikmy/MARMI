@@ -7,7 +7,7 @@
 
 #include "queue.h"
 
-using namespace tsq;
+using namespace gen;
 
 void test_queue()
 {

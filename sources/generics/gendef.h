@@ -7,6 +7,8 @@
 #include <thread>
 #include <mutex>
 
+#include "genexcept.h"
+
 namespace gen
 {
 using cond_var_t = std::condition_variable;
@@ -23,6 +25,9 @@ class Resource;
 
 template <class T>
 class DataHandler;
+
+template <class T>
+struct ShutdownStrategy;
 
 template <class T>
 class ResourceManager;

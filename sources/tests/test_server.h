@@ -36,13 +36,13 @@ void test_server()
     std::cout << "[+] Server stopped normally" << std::endl;
 
     std::cout << "[+] " << checker.get_all_ignored()
-              << " requests are pending" << std::endl;
+              << " request(s) are pending" << std::endl;
 
     bar.assign(100);
 
     std::cout << "[+] Restarting server..." << std::endl;
 
-    server.start();
+    server.restart();
 
     std::cout << "[+] Server is running, wait a minute..." << std::endl;
 
@@ -58,12 +58,14 @@ void test_server()
 
     std::cout << "[+] Server shutdown normally" << std::endl;
 
-    std::cout << "[!] " << checker.get_all()
-              << " requests have been processed, "
-              << checker.get_all_ignored()
+    std::cout << "[!] " << checker.get_all() - checker.get_all_ignored()
+              << " request(s) have been processed, "
+              << server.get_backup_size()
+              << " saved, "
+              << checker.get_all_ignored() - server.get_backup_size()
               << " ignored\n";
 
-    if (checker.get_all_ignored()) {
+    if (checker.get_all_ignored() - server.get_backup_size()) {
         std::cerr << "[-] Test failed.\n" << std::endl;
     }
     else {

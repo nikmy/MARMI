@@ -32,7 +32,8 @@ class ResourceManager
     void start();
     void stop();
 
-    void shutdown();
+    void save_session_data(Queue<T>& backup);
+    void restore_session_data(Queue<T>& backup);
 
  private:
     resource_t& resource_;
@@ -42,8 +43,8 @@ class ResourceManager
     mutex_t               resource_mutex_;
     size_t                n_of_threads_;
 
-    tsq::Queue<data_t> queue_;
-    mutex_t            queue_mutex_;
+    Queue<data_t> queue_;
+    mutex_t       queue_mutex_;
 
     cond_var_t cv_run_;
     cond_var_t cv_put_;
@@ -70,7 +71,7 @@ ResourceManager<T>::ResourceManager(
 
 template <class T>
 ResourceManager<T>::~ResourceManager()
-{ shutdown(); }
+{ stop(); }
 
 template <class T>
 void ResourceManager<T>::start()
@@ -97,15 +98,6 @@ void ResourceManager<T>::stop()
         t.join();
 
     threads_.clear();
-}
-
-template <class T>
-void ResourceManager<T>::shutdown()
-{
-    stop();
-
-    while (!queue_.empty())
-        handler_.process(queue_.take_first());
 }
 
 template <class T>
@@ -144,6 +136,60 @@ void ResourceManager<T>::worker_routine_()
             cv_put_.notify_one();
         }
     }
+}
+
+template <class T>
+void ResourceManager<T>::save_session_data(gen::Queue<T>& backup)
+try
+{
+    if (current_state_ == STATUS_RUNNING) {
+        throw IllegalAccess(
+            "Attempt to move the processing data, session terminated\n"
+        );
+    }
+    queue_.move_to(backup);
+}
+catch (IllegalAccess& e) {
+    stop();
+    e.what();
+    throw;
+}
+
+template <class T>
+void ResourceManager<T>::restore_session_data(gen::Queue<T>& backup)
+try
+{
+    if (current_state_ == STATUS_RUNNING) {
+        throw IllegalAccess(
+            "Attempt to restore session while running, session terminated\n"
+        );
+    }
+
+    if (backup.size() > queue_.max_size()) {
+        throw WaitingQueueOverflow(
+            "Backup size exceeds the maximum allowed\n"
+        );
+    }
+
+    if (!queue_.empty()) {
+        std::string leak_info =
+                        std::string("Waiting queue is not empty, ")
+                        + std::to_string(queue_.size() * sizeof(data_t))
+                        + std::string(" bytes have been lost");
+        throw UnsavedDataLeak(leak_info.c_str());
+    }
+
+    backup.move_to(queue_);
+}
+catch (UnsavedDataLeak& e) {
+    backup.move_to(queue_);
+    e.what();
+    throw;
+}
+catch (std::runtime_error& e) {
+    stop();
+    e.what();
+    throw;
 }
 
 }
