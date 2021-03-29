@@ -9,7 +9,7 @@ template <
 > class Queue
 ```
 
-Thread-safety queue template.
+Thread-safety queue class template.
 
 ```c++
 /// If init_capacity is not a power of two,  
@@ -26,8 +26,6 @@ value_t take_first() noexcept;
 /// Not thread-safety method!
 void move_to(Queue<T>& other);
 ```
-
-### ```namespace gen```
 
 ```c++
 template <data_t>
@@ -77,9 +75,20 @@ void start();
 // after completing their current jobs
 void stop();
 
-// this method is similar to stop,
-// but after terminating all threads
-// it processes all data from the queue
-void shutdown();
+// move waiting queue to the backup if
+// manager is not running, otherwise
+// throw IllegalAccess exception and
+// call stop()
+void save_session_data(Queue<T>& backup);
+
+// move backup to the waiting queue if
+// manager is not running and size of
+// backup is less or equal to the capacity
+// of waiting queue. In the case when there
+// are running processes, throw IllegalAccess
+// exception and call stop(); if size of backup
+// is greater than capacity of the waiting queue,
+// throw UnsavedDataLeak without stopping and moving
+void restore_session_data(Queue<T>& backup);
 ```
 

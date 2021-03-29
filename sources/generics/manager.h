@@ -40,11 +40,12 @@ class ResourceManager
     handler_t & handler_;
 
     std::vector<thread_t> threads_;
-    mutex_t               resource_mutex_;
     size_t                n_of_threads_;
 
     Queue<data_t> queue_;
-    mutex_t       queue_mutex_;
+
+    mutex_t resource_mutex_;
+    mutex_t queue_mutex_;
 
     cond_var_t cv_run_;
     cond_var_t cv_put_;
@@ -66,7 +67,7 @@ ResourceManager<T>::ResourceManager(
       handler_(handler),
       n_of_threads_(n_of_threads),
       queue_(max_queue_size),
-      current_state_(STATUS_WAITING)
+      current_state_(STATUS_STOPPED)
 { threads_.reserve(n_of_threads); }
 
 template <class T>
@@ -76,13 +77,14 @@ ResourceManager<T>::~ResourceManager()
 template <class T>
 void ResourceManager<T>::start()
 {
+    current_state_ = STATUS_RUNNING;
+
     threads_.template emplace_back([&] { put_data_in_queue_(); });
 
     for (size_t i = 1; i < n_of_threads_; ++i) {
         threads_.template emplace_back([&] { worker_routine_(); });
     }
 
-    current_state_ = STATUS_RUNNING;
     cv_put_.notify_one();
     cv_run_.notify_all();
 }
@@ -94,8 +96,9 @@ void ResourceManager<T>::stop()
     cv_put_.notify_one();
     cv_run_.notify_all();
 
-    for (auto& t : threads_)
+    for (auto& t : threads_) {
         t.join();
+    }
 
     threads_.clear();
 }
@@ -106,7 +109,7 @@ void ResourceManager<T>::put_data_in_queue_()
     while (current_state_ != STATUS_STOPPED) {
         lock_t lock(resource_mutex_);
 
-        while (resource_.is_empty() && current_state_ != STATUS_STOPPED);
+        while (resource_.is_empty() && current_state_ != STATUS_STOPPED) { }
 
         cv_put_.wait(
             lock,
@@ -182,7 +185,6 @@ try
     backup.move_to(queue_);
 }
 catch (UnsavedDataLeak& e) {
-    backup.move_to(queue_);
     e.what();
     throw;
 }

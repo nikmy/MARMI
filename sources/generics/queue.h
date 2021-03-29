@@ -113,7 +113,7 @@ class Queue
     static allocator_t& Get_Allocator();
 
     template <class Q = Queue<T>>
-    void emplace_(Q&& q) noexcept;
+    void emplace_tail_(Q&& q) noexcept;
 };
 }
 
@@ -422,10 +422,10 @@ void Queue<T, Alloc>::move_to(Queue<T>& other)
 try
 {
     if (&other == this) {
-        throw std::invalid_argument("Queue::emplace_: "
+        throw std::invalid_argument("Queue::emplace_tail_: "
                                     "Moving to self detected\n");
     }
-    other.emplace_(std::move(*this));
+    other.emplace_tail_(std::move(*this));
 }
 catch (std::invalid_argument& e) {
     e.what();
@@ -469,7 +469,7 @@ Alloc& Queue<T, Alloc>::Get_Allocator()
 
 template <class T, class Alloc>
 template <class Q>
-void Queue<T, Alloc>::emplace_(Q&& q) noexcept
+void Queue<T, Alloc>::emplace_tail_(Q&& q) noexcept
 {
     size_t it = q.front_;
 
