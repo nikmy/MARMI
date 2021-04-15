@@ -71,24 +71,23 @@ ResourceManager
 // (n_of_threads - 1) for handling data from queue 
 void start();
 
-// terminate all working threads
+// terminates all working threads
 // after completing their current jobs
 void stop();
 
-// move waiting queue to the backup if
+// moves waiting queue to the backup if
 // manager is not running, otherwise
 // throw IllegalAccess exception and
 // call stop()
 void save_session_data(Queue<T>& backup);
 
-// move backup to the waiting queue if
-// manager is not running and size of
-// backup is less or equal to the capacity
-// of waiting queue. In the case when there
-// are running processes, throw IllegalAccess
-// exception and call stop(); if size of backup
-// is greater than capacity of the waiting queue,
-// throw UnsavedDataLeak without stopping and moving
+// moves backup to the waiting queue if manager  
+// is not running and size of backup is less or
+// equal to the capacity of waiting queue. In  
+// the case when there are running processes,  
+// throw IllegalAccess exception and call stop();  
+// if size of backup is greater than capacity of  
+// the waiting queue, throw UnsavedDataLeak  
+// without stopping and moving
 void restore_session_data(Queue<T>& backup);
 ```
-
