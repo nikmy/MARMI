@@ -27,7 +27,7 @@ class QueueIterator
     bool operator!=(const QueueIterator& rhs) const;
     bool operator==(const QueueIterator& rhs) const;
 
-    typename QueueIterator::reference operator*() const;
+    typename QueueIterator::reference operator*() const noexcept;
 
     QueueIterator<T, Alloc>& operator+=(size_t offset);
     QueueIterator<T, Alloc>& operator-=(size_t offset);
@@ -91,7 +91,7 @@ class Queue
     template <class...Args>
     void emplace(Args&& ...args);
 
-    void move_to(Queue<T>& other);
+    void move_to(Queue<T>& other) noexcept;
 
     void swap(Queue<T>& other) noexcept;
 
@@ -140,17 +140,8 @@ bool QueueIterator<T, Alloc>::operator==(const QueueIterator& rhs) const
 
 template <class T, class Alloc>
 typename QueueIterator<T, Alloc>::reference
-QueueIterator<T, Alloc>::operator*() const
-try
-{
-    if (item_ < base_ || item_ - size_ > base_)
-        throw std::out_of_range("Invalid iterator\n");
-    return *item_;
-}
-catch (std::out_of_range& e) {
-    e.what();
-    throw;
-}
+QueueIterator<T, Alloc>::operator*() const noexcept
+{ return *item_; }
 
 template <class T, class Alloc>
 QueueIterator<T, Alloc>&
@@ -358,7 +349,6 @@ void Queue<T, Alloc>::clear() noexcept
 {
     while (size_)
         pop();
-
     size_  = 0;
     front_ = back_ = 0;
 }
@@ -379,7 +369,7 @@ void Queue<T, Alloc>::push(const value_t& x)
 
 template <class T, class Alloc>
 void Queue<T, Alloc>::push(value_t&& x)
-{ emplace(std::move_if_noexcept(x)); }
+{ emplace(std::move(x)); }
 
 template <class T, class Alloc>
 template <class...Args>
@@ -418,18 +408,10 @@ void Queue<T, Alloc>::emplace(Args&& ...args)
 }
 
 template <class T, class Alloc>
-void Queue<T, Alloc>::move_to(Queue<T>& other)
-try
+void Queue<T, Alloc>::move_to(Queue<T>& other) noexcept
 {
-    if (&other == this) {
-        throw std::invalid_argument("Queue::emplace_tail_: "
-                                    "Moving to self detected\n");
-    }
-    other.emplace_tail_(std::move(*this));
-}
-catch (std::invalid_argument& e) {
-    e.what();
-    throw;
+    if (&other != this)
+        other.emplace_tail_(std::move(*this));
 }
 
 template <class T, class Alloc>
@@ -472,7 +454,6 @@ template <class Q>
 void Queue<T, Alloc>::emplace_tail_(Q&& q) noexcept
 {
     size_t it = q.front_;
-
     for (size_t i = 0; i < q.size_; ++i) {
         emplace(std::move_if_noexcept(q.data_[it]));
         it = (it + 1) & (q.capacity_ - 1);
