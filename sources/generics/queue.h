@@ -89,7 +89,7 @@ class Queue
     void push(value_t&& x);
 
     template <class...Args>
-    void emplace(Args&& ...args);
+    void emplace(Args&& ...args) noexcept;
 
     void move_to(Queue<T>& other) noexcept;
 
@@ -373,30 +373,33 @@ void Queue<T, Alloc>::push(value_t&& x)
 
 template <class T, class Alloc>
 template <class...Args>
-void Queue<T, Alloc>::emplace(Args&& ...args)
+void Queue<T, Alloc>::emplace(Args&& ...args) noexcept
 {
     std::lock_guard<std::mutex> guard(access_mutex_);
     if (size_ == capacity_) {
         size_t new_capacity = capacity_ ? (capacity_ * 2) : MIN_CAP;
-        T* new_ring = alloc_traits::allocate(Get_Allocator(), new_capacity);
-        alloc_traits::construct(
-            Get_Allocator(), new_ring + size_, std::forward<Args>(args)...
-        );
-
-        for (size_t it = 0; it < size_; ++it) {
+        try {
+            T* new_ring = alloc_traits::allocate(Get_Allocator(), new_capacity);
             alloc_traits::construct(
-                Get_Allocator(),
-                new_ring + it,
-                std::move_if_noexcept(data_[front_])
+                Get_Allocator(), new_ring + size_, std::forward<Args>(args)...
             );
-            front_ = (front_ + 1) & (capacity_ - 1);
+
+            for (size_t it = 0; it < size_; ++it) {
+                alloc_traits::construct(
+                    Get_Allocator(),
+                    new_ring + it,
+                    std::move_if_noexcept(data_[front_])
+                );
+                front_ = (front_ + 1) & (capacity_ - 1);
+            }
+            alloc_traits::deallocate(Get_Allocator(), data_, capacity_);
+
+            back_ = ++size_;
+            capacity_ = new_capacity;
+            data_ = new_ring;
+        } catch (std::bad_alloc& e) {
+            e.what();
         }
-        alloc_traits::deallocate(Get_Allocator(), data_, capacity_);
-
-        back_     = ++size_;
-        capacity_ = new_capacity;
-        data_     = new_ring;
-
         return;
     }
 
@@ -454,11 +457,11 @@ template <class Q>
 void Queue<T, Alloc>::emplace_tail_(Q&& q) noexcept
 {
     size_t it = q.front_;
-    for (size_t i = 0; i < q.size_; ++i) {
+    while (q.size_ && size_ < capacity_) {
         emplace(std::move_if_noexcept(q.data_[it]));
+        q.pop();
         it = (it + 1) & (q.capacity_ - 1);
     }
-    q.clear();
 }
 
 }

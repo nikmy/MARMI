@@ -52,8 +52,8 @@ class ResourceManager
 
     Status current_state_;
 
-    void put_data_in_queue_();
-    void worker_routine_();
+    void receive_data_();
+    void process_data_();
 };
 
 template <class T>
@@ -79,10 +79,10 @@ void ResourceManager<T>::start()
 {
     current_state_ = STATUS_RUNNING;
 
-    threads_.template emplace_back([&] { put_data_in_queue_(); });
+    threads_.template emplace_back([&] { receive_data_(); });
 
     for (size_t i = 1; i < n_of_threads_; ++i) {
-        threads_.template emplace_back([&] { worker_routine_(); });
+        threads_.template emplace_back([&] { process_data_(); });
     }
 
     cv_put_.notify_one();
@@ -104,7 +104,7 @@ void ResourceManager<T>::stop()
 }
 
 template <class T>
-void ResourceManager<T>::put_data_in_queue_()
+void ResourceManager<T>::receive_data_()
 {
     while (current_state_ != STATUS_STOPPED) {
         lock_t lock(resource_mutex_);
@@ -124,7 +124,7 @@ void ResourceManager<T>::put_data_in_queue_()
 }
 
 template <class T>
-void ResourceManager<T>::worker_routine_()
+void ResourceManager<T>::process_data_()
 {
     while (current_state_ != STATUS_STOPPED) {
         lock_t lock(queue_mutex_);
@@ -143,55 +143,20 @@ void ResourceManager<T>::worker_routine_()
 
 template <class T>
 void ResourceManager<T>::save_session_data(gen::Queue<T>& backup)
-try
 {
     if (current_state_ == STATUS_RUNNING) {
-        throw IllegalAccess(
-            "Attempt to move the processing data, session terminated\n"
-        );
+        stop();
     }
     queue_.move_to(backup);
-}
-catch (IllegalAccess& e) {
-    stop();
-    e.what();
-    throw;
 }
 
 template <class T>
 void ResourceManager<T>::restore_session_data(gen::Queue<T>& backup)
-try
 {
     if (current_state_ == STATUS_RUNNING) {
-        throw IllegalAccess(
-            "Attempt to restore session while running, session terminated\n"
-        );
+        stop();
     }
-
-    if (backup.size() > queue_.max_size()) {
-        throw WaitingQueueOverflow(
-            "Backup size exceeds the maximum allowed\n"
-        );
-    }
-
-    if (!queue_.empty()) {
-        std::string leak_info =
-                        std::string("Waiting queue is not empty, ")
-                        + std::to_string(queue_.size() * sizeof(data_t))
-                        + std::string(" bytes have been lost");
-        throw UnsavedDataLeak(leak_info.c_str());
-    }
-
     backup.move_to(queue_);
-}
-catch (UnsavedDataLeak& e) {
-    e.what();
-    throw;
-}
-catch (std::runtime_error& e) {
-    stop();
-    e.what();
-    throw;
 }
 
 }

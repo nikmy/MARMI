@@ -12,6 +12,9 @@ set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -O2 -Wall -Wextra -fsa
 
 include_directories(sources/generics sources/queue sources/scheduler sources/server sources/tests sources)
 
+# use following for debug
+# add_definitions(-DALLOW_THROW)
+
 add_definitions(-DQUEUE_TEST)
 add_definitions(-DGENERICS_TEST)
 add_definitions(-DSERVER_TEST)

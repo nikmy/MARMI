@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef ALLOW_THROW
+
 #include <stdexcept>
 
 namespace gen
@@ -30,3 +32,5 @@ class UnsavedDataLeak : public std::runtime_error
 };
 
 }
+
+#endif  // ALLOW_THROW

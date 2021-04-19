@@ -24,7 +24,7 @@ value_t take_first() noexcept;
 
 /// Moves *this to the back of other
 /// Not thread-safety method!
-void move_to(Queue<T>& other);
+void move_to(Queue<T>& other) noexcept;
 ```
 
 ```c++
@@ -57,7 +57,7 @@ Handler interface. Your data-handling class must implement this.
 template <data_t>
 class ResourceManager
 ```
-Resource manager interface - main class of this project.
+Resource manager - the main class of this project.
 ```c++
 ResourceManager
 (
@@ -77,17 +77,15 @@ void stop();
 
 // moves waiting queue to the backup if
 // manager is not running, otherwise
-// throw IllegalAccess exception and
-// call stop()
+// calls stop() and then moves the queue
 void save_session_data(Queue<T>& backup);
 
-// moves backup to the waiting queue if manager  
-// is not running and size of backup is less or
-// equal to the capacity of waiting queue. In  
-// the case when there are running processes,  
-// throw IllegalAccess exception and call stop();  
-// if size of backup is greater than capacity of  
-// the waiting queue, throw UnsavedDataLeak  
-// without stopping and moving
+// fills all free space in the processing queue
+// with elements from the backup, starting from
+// the first element; the backup may not become
+// empty if there are not enough free space in
+// the processing queue; if manager is running,
+// it calls stop(), then moves data and after
+// that restarts the manager (calls start())
 void restore_session_data(Queue<T>& backup);
 ```

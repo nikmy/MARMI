@@ -146,7 +146,7 @@ void test_queue()
         assert(q.back() == 2 && q.size() == 6);
 
         q.move_to(w);
-        assert(q.size() == 0);
+        assert(q.empty());
         assert(w.size() == 6);
 
         while (!w.empty())

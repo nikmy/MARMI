@@ -7,8 +7,6 @@
 #include <thread>
 #include <mutex>
 
-#include "genexcept.h"
-
 namespace gen
 {
 using cond_var_t = std::condition_variable;
