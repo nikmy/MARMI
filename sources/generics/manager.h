@@ -72,7 +72,18 @@ ResourceManager<T>::ResourceManager(
 
 template <class T>
 ResourceManager<T>::~ResourceManager()
-{ stop(); }
+{
+    stop();
+#ifdef __INFO_DEBUG__
+    if (!queue_.empty()) {
+        std::string leak_info =
+            std::string("Unsaved data leak detected: ") +
+            std::to_string(queue_.size()) +
+            std::string(" elements are pending.\n");
+        UnsavedDataLeak(leak_info.c_str()).what();
+    }
+#endif  // __INFO_DEBUG__
+}
 
 template <class T>
 void ResourceManager<T>::start()
@@ -156,6 +167,14 @@ void ResourceManager<T>::restore_session_data(gen::Queue<T>& backup)
     if (current_state_ == STATUS_RUNNING) {
         stop();
     }
+#ifdef __INFO_DEBUG__
+    if (queue_.max_size() < queue_.size() + backup.size()) {
+        WaitingQueueOverflow(
+            "Not all saved data will be processed: "
+            "there are not enough free space for restoring\n"
+        ).what();
+    }
+#endif // __INFO_DEBUG__
     backup.move_to(queue_);
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "gendef.h"
+
 #include <iterator>
 #include <mutex>
 
@@ -356,6 +358,13 @@ void Queue<T, Alloc>::clear() noexcept
 template <class T, class Alloc>
 T Queue<T, Alloc>::take_first() noexcept
 {
+#ifdef __INFO_DEBUG__
+    if (empty()) {
+        IllegalAccess("Nothing to take: queue is empty\n").what();
+        return *data_;
+    }
+#endif  // __INFO_DEBUG__
+
     std::lock_guard<std::mutex> guard(access_mutex_);
 
     value_t value = front();
@@ -398,7 +407,9 @@ void Queue<T, Alloc>::emplace(Args&& ...args) noexcept
             capacity_ = new_capacity;
             data_ = new_ring;
         } catch (std::bad_alloc& e) {
+#ifdef __INFO_DEBUG__
             e.what();
+#endif  // __INFO_DEBUG__
         }
         return;
     }

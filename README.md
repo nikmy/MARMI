@@ -88,4 +88,22 @@ void save_session_data(Queue<T>& backup);
 // it calls stop(), then moves data and after
 // that restarts the manager (calls start())
 void restore_session_data(Queue<T>& backup);
+```  
+
+#### Debug and logging
+If you enable macros ```__INFO_DEBUG__``` in CMakeLists.txt,  
+you can see more information in some dangerous situations:
+```c++
+// what() is called in take_first()  
+// if the queue is empty
+class IllegalAccess;
+
+// what() is called in restore_session_data()
+// if there are not enough free space in
+// the waiting queue for the backup
+class WaitingQueueOverflow;
+
+// what() is called in ResourceManager destructor
+// if queue is not empty (data has not been saved)
+class UnsavedDataLeak;
 ```

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef ALLOW_THROW
+#ifdef __INFO_DEBUG__
 
 #include <stdexcept>
 
@@ -33,4 +33,4 @@ class UnsavedDataLeak : public std::runtime_error
 
 }
 
-#endif  // ALLOW_THROW
+#endif  // __INFO_DEBUG__
